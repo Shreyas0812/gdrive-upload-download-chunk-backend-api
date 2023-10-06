@@ -3,6 +3,6 @@ import gdriveUploadDownloadRouter from "./pages/gdriveUploadDownload/gdriveUploa
 
 const router = Router();
 
-router.use('/gdrive', gdriveUploadDownloadRouter)
+router.use('/gdriveUD', gdriveUploadDownloadRouter)
 
 export default router;

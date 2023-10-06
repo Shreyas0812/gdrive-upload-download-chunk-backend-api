@@ -1,16 +1,17 @@
 import { Router } from "express";
-import { getUpload } from "./gdriveUploadDownload.controller.js";
+import { uploadTextFiles } from "./gdriveUploadDownload.controller.js";
 
 const router = Router();
 
 router  
     .route('/')
     .get((req, res) => {
-        res.send("api -> gdrive")
+        res.send("INSIDE: API --> GDDRIVEUD")
     })
 
 router
-    .route('/upload')
-    .get(getUpload)
+    .route('/uploadTextFile')
+    .post(uploadTextFiles)
+
 
 export default router;
