@@ -103,6 +103,51 @@ app.get('/saveVideo', async (req, res) => {
     });
 })
 
+app.get('/downloadVideo/:fileId', async (req, res) => {
+    const drive = google.drive({ version: "v3", auth: oauth2Client });
+    const fileId = req.params.fileId;
+
+    const driveRes = await drive.files.get({
+        fileId: fileId,
+        alt: 'media'
+    })
+
+    const blob = driveRes.data;
+    // Convert the Blob to a Buffer
+    const arrayBuffer = await blob.arrayBuffer();
+    const videoBuffer = Buffer.from(arrayBuffer);
+
+    const filePath = 'video.mp4';
+
+    fs.writeFileSync(filePath, videoBuffer);
+
+    res.send({
+        "message": "Video Downloaded Successfully"
+    });
+})
+
+app.get('/fileDetails', async (req, res) => {
+    const drive = google.drive({ version: "v3", auth: oauth2Client });
+    const files = [];
+
+    const driveRes = await drive.files.list({
+        q: 'mimeType=\'video/mp4\'',
+        fields: 'nextPageToken, files(id, name)',
+        spaces: 'drive'
+    })
+
+    Array.prototype.push.apply(files, driveRes.files);
+
+    driveRes.data.files.forEach(file => {
+        console.log('Found File: ', file.name, file.id);
+    });;
+
+    res.send({
+        "message": "File List Fetched Successfully",
+        "list": driveRes.data.files
+    });
+})
+
 const port = process.env.PORT || 3007;
 
 app.use('/api/', router)
