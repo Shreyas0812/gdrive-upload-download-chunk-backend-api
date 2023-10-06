@@ -37,16 +37,18 @@ app.get('/google/redirect', async (req, res) => {
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
     fs.writeFileSync("creds.json", JSON.stringify(tokens));
-    res.send("Success");
+    res.send({
+        "message": "success"
+    });
 })
 
 app.get('/saveText/:sometext', async (req, res) => {
     const drive = google.drive({ version: "v3", auth: oauth2Client });
     const content = req.params.sometext;
 
-    drive.files.create({
+    const driveRes = await drive.files.create({
         requestBody: {
-            name: "driveProj/testTXT.txt",
+            name: "testTXT.txt",
             mimeType: "text/plain"
         },
         media: {
@@ -54,6 +56,11 @@ app.get('/saveText/:sometext', async (req, res) => {
             body: content
         }
     })
+
+    // console.log(driveRes);
+    res.send({
+        "message": "text File Uploaded Successfully"
+    });
 })
 
 app.get('/saveImage', async (req, res) => {
@@ -70,10 +77,30 @@ app.get('/saveImage', async (req, res) => {
         }
     })
 
-    console.log(driveRes);
-    return {
+    // console.log(driveRes);
+    res.send({
         "message": "Image Uploaded Successfully"
-    }
+    });
+})
+
+app.get('/saveVideo', async (req, res) => {
+    const drive = google.drive({ version: "v3", auth: oauth2Client });
+
+    const driveRes = await drive.files.create({
+        requestBody: {
+            name: "testMP4.mp4",
+            mimeType: "video/mp4"
+        },
+        media: {
+            mimeType: "video/mp4",
+            body: fs.createReadStream("running_freepik.mp4")
+        }
+    })
+
+    // console.log(driveRes);
+    res.send({
+        "message": "Video Uploaded Successfully"
+    });
 })
 
 const port = process.env.PORT || 3007;
